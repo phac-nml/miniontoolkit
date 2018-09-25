@@ -1,0 +1,12 @@
+name: albacore.2.3.3
+dependencies:
+  - python==3.6 
+  - h5py
+  - numpy
+  - libboost
+  - ont-fast5-api
+  - python-dateutil
+  - progressbar2
+  - setuptools
+  - pip:
+     - https://mirror.oxfordnanoportal.com/software/analysis/ont_albacore-2.3.3-cp36-cp36m-manylinux1_x86_64.whl 

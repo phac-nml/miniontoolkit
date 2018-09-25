@@ -1,0 +1,4 @@
+name: combineResults
+dependencies:
+  - python==3.6
+  - click
