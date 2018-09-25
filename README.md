@@ -36,8 +36,8 @@ Directory of raw fast5 files from MiniKnow software. Recommended is to soft link
 
 
 ### results/* ###
-File Name | description                                                       
----  | ---  | ---
+File Name                                | description                                                       
+---                                          | ---
 `run_health.txt`                          | Overall statistics of the albacore run for individul barcode(s)  
 `summary_sequencing.txt`                          | Tabular file that contains **sequencing_summary.txt** from all individual albacore run(s)                                                              
 `pass/*.fastq`                          | Individual fastq file(s) of all passed reads. They are separate based on barcode Number and run ID.
