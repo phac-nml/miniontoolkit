@@ -62,7 +62,7 @@ Albacore  Parameters                                | Default Value             
 ### configs/slurm.yaml ###
 
 Cluster specific Parameters                               | Name | Default Value                                                        | Usage
----                                          | ---                                                                 | ---
+---                                          | ---                                                                 | --- | ---
 `__default__`                          | cpu |  `1`                                                             | Default number of CPU slurm jobs will be given unless otherwise explicitly marked
 `__default__`                          | partition |  `NONE`                                                             | Name of slurm partition to submit jobs too.
 `__default__`                          | memory |  `8192`                                                             | Maximum memory allocated value to be passed to slurm
