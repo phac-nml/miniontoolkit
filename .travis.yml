@@ -1,0 +1,18 @@
+sudo: false
+language: python
+python: 3.6
+
+install:
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+  - bash Miniconda3-latest-Linux-x86_64.sh -b -p ~/miniconda3
+  - rm Miniconda3-latest-Linux-x86_64.sh
+  - export PATH="$HOME/miniconda3/bin:$PATH"
+  - hash -r
+  - conda config --add channels defaults
+  - conda config --add channels conda-forge
+  - conda config --add channels bioconda
+  - conda config --set always_yes yes --set changeps1 no
+  - conda install snakemake
+
+script:
+  - snakemake --use-conda --config BASEDIR=test/fast5
