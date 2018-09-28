@@ -4,6 +4,8 @@ KIT: "SQK-RBK004"
 ALBACORE_VERSION: "2.3.3" #available versions : 2.3.0 , 2.3.1 , 2.3.3
 #input base directory of raw fast5 files from MiniKnow
 BASEDIR: "fast5"
+CLEANUP: "True" # cleanup individual albacore runs on sucessfully completion. Values allowed 'True' or 'False'
+DELETE_FAILED: "True" #do not keep fail/*.fastq files in final results. Values allowed 'True' or 'False'
 
 #Variables below should not have to be modified on a run by run basis
 #script for aggregating individual albacore runs

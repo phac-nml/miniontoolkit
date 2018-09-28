@@ -1,4 +1,5 @@
-import os
+import os,shutil
+from distutils.util import strtobool
 
 #load run configuration file
 configfile: "configs/minion.yaml"
@@ -9,6 +10,10 @@ KIT=config["KIT"]
 BASEDIR=config["BASEDIR"]
 GATHER=config["GATHER"]
 ALBACORE_VERSION=config["ALBACORE_VERSION"]
+
+CLEANUP=config["CLEANUP"]
+DELETE_FAILED=config["DELETE_FAILED"]
+
 
 #directory path to Miniknow fast5 files are located
 RAW_READS=[f.name for f in os.scandir(BASEDIR) if f.is_dir() ]
@@ -22,7 +27,7 @@ rule aggregate_results:
   conda:
     "envs/combineResults.yml"
   shell:
-    "{GATHER} {output} {input}"
+    "{GATHER} %s {output} {input}" % (DELETE_FAILED)
 
 rule albacore:
   input:
@@ -35,3 +40,10 @@ rule albacore:
   shell:
     "read_fast5_basecaller.py --flowcell {FLOWCELL} --kit {KIT} --barcoding --recursive --output_format fast5,fastq --input {input} --save_path {output} --disable_pings -q 999999999 --worker_threads {threads}"
 
+
+onsuccess:
+    if strtobool(CLEANUP) == True:
+        #check to see if any results are there to be removed
+        if os.path.isdir("albacore_results/"):
+            print("Cleaning up individual albacore results as indicate by 'CLEANUP' flag.")
+            shutil.rmtree("albacore_results/")
