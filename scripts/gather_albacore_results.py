@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import click
-import os
+import os,shutil
 import glob
 
 MAX_DEPTH = 6
@@ -38,7 +38,7 @@ def cat_fastq_files(fastq_files, output_dir,subdir):
     fullpath= output_dir + subdir
     #create directory if does not already exist
     os.makedirs(fullpath, exist_ok=True)
-    
+
     for f in fastq_files:
         barcode = f.split("/")[-2]
         barcodes.add(barcode)
@@ -101,7 +101,7 @@ def cat_sequence_summaries(input_dirs, sequencing_summary):
         fp = open(sequencing_summary, "w")
         fp.write(final_sequencing_summary)
         fp.close()
-        
+
 
 #   **Get the total number of reads processed by Albacore**
 # This is just the number of lines in the sequencing summary file, (minus the
@@ -121,9 +121,9 @@ def get_num_reads_stats(sequencing_summary):
     num_reads_failed = 0
     num_no_match = 0
     with open(sequencing_summary, "r") as fp:
-        
+
         header_line = fp.readline() #grab the header from the file
-        
+
         for line in fp.readlines():
             if line.split("\t")[7] == "True":
                 num_reads_passed += 1
@@ -134,7 +134,7 @@ def get_num_reads_stats(sequencing_summary):
                 #at the moment, looks these reads do not appear anywhere in the fastq output in either fail or pass
                 if line.split("\t")[15] == "no_match":
                     num_no_match += 1
-                
+
     return num_reads_passed, num_reads_failed, num_no_match
 
 #   **Generate and return a dict containing barcode run statistics**
@@ -149,8 +149,8 @@ def get_barcode_stats(input_dirs, output_dir):
 
     #determine total of all passed,failed and total across all barcodes
     totals = { 'passed':0, 'failed':0, 'all':0 }
-        
-    
+
+
     # For stats on passed reads we can use the output fastq files
     fastq_pass_files = glob.glob(output_dir + "/pass/*.fastq")
 
@@ -178,7 +178,7 @@ def get_barcode_stat(barcode_stats, totals, fastq_files,status):
             barcode_stats[barcode_name]["passed"] = 0
             barcode_stats[barcode_name]["failed"] = 0
             barcode_stats[barcode_name]["total"] = 0
-            
+
         with open(f, "r") as fp:
             numlines = len(fp.readlines())
             #correct formatted fastq files will have 4 lines per read.
@@ -189,7 +189,7 @@ def get_barcode_stat(barcode_stats, totals, fastq_files,status):
 
             totals[status] += numlines
             totals['all']  += numlines
-                
+
             barcode_stats[barcode_name][status] += numlines
             barcode_stats[barcode_name]["total"] += numlines
 
@@ -220,21 +220,22 @@ def generate_run_health(input_dirs, sequencing_summary, run_health_path):
     for b in barcode_stats:
         fp.write("%s\t%d\t%d\t%d" % (b, barcode_stats[b]["passed"], barcode_stats[b]["failed"], barcode_stats[b]["total"]) + "\n")
 
-   
-    #print out total for each category 
+
+    #print out total for each category
     fp.write("totals:\t%d\t%d\t%d" % (totals['passed'],totals['failed'],totals['all']) + "\n")
 
-        
+
     fp.close()
 
 
 @click.command()
+@click.argument('deletefailed', nargs=1, type=bool, default=False, required=True)
 @click.argument('sequencing_summary', nargs=1, required=True)
 @click.argument('run_health', nargs=1, required=True)
 @click.argument('input_dirs', nargs=-1, required=True)
 
 
-def get_albacore_results(sequencing_summary, run_health, input_dirs):
+def get_albacore_results(deletefailed,sequencing_summary, run_health, input_dirs):
     # get directory of ouput `sequencing_summary` so we can output the reads
     # there as well.
     output_dir = os.path.dirname(sequencing_summary)
@@ -249,14 +250,18 @@ def get_albacore_results(sequencing_summary, run_health, input_dirs):
     cat_fastq_files(fastq_pass_files, output_dir,"/pass")
 
 
-    fastq_pass_files = get_fastq_files(input_dirs,"/workspace/fail/")
+    fastq_failed_files = get_fastq_files(input_dirs,"/workspace/fail/")
 
     #combine fail fastq files into result directory
-    cat_fastq_files(fastq_pass_files, output_dir,"/fail")
+    cat_fastq_files(fastq_failed_files, output_dir,"/fail")
 
-    
+
     cat_sequence_summaries(input_dirs, sequencing_summary)
     generate_run_health(input_dirs, sequencing_summary, run_health)
+
+    #check to see if we delete the failed fastqs reads
+    if deletefailed == True:
+        shutil.rmtree(output_dir +"/fail/")
 
 
 if __name__ == "__main__":
