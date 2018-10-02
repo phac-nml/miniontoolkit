@@ -20,14 +20,15 @@ RAW_READS=[f.name for f in os.scandir(BASEDIR) if f.is_dir() ]
 
 rule aggregate_results:
   input:
-    expand("albacore_results/results_{sample}", sample=RAW_READS)
+    expand("albacore_results/results_{basecalled_dir}", basecalled_dir=RAW_READS)
   output:
-    "results/sequencing_summary.txt", #combine all albacore runs into a SINGLE sequencing_summary.txt
-    "results/run_health.txt" # statistics on how well the run went.
+    ss="results/sequencing_summary.txt", #combine all albacore runs into a SINGLE sequencing_summary.txt
+    health="results/run_health.txt", # statistics on how well the run went.
+    read_dir=directory("results/pass")
   conda:
     "envs/combineResults.yml"
   shell:
-    "{GATHER} %s {output} {input}" % (DELETE_FAILED)
+    "{GATHER} %s {output.ss} {output.health} {input}" % (DELETE_FAILED)
 
 rule albacore:
   input:
