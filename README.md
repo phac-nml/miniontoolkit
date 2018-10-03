@@ -57,7 +57,10 @@ Albacore  Parameters                                | Default Value             
 `KIT`                  | `SQK-RBK004`                                                             | Kit used for experiment
 `BASEDIR`                  | `fast5`                                                             | Base directory of location of raw un-processed fast5 reads from MiniKnow software. Suggested behavior is to soft link your directory to the snakeMake directory. Example: `ln -s ~/results/run1/fast5 fast5`
 `ALBACORE_VERSION`                  | `2.3.3`                                                             | Version of Albacore to be used in the basecalling. Current allow version are 2.3.0 , 2.3.1 , 2.3.3
+`CLEANUP` | False | cleanup individual albacore runs on sucessfully completion. Values allowed 'True' or 'False'
+`DELETE_FAILED` | False | do not keep fail/\*.fastq files in final results. Values allowed 'True' or 'False'
 `GATHER`                          | `scripts/gather_albacore_results.py`                                                             | `Developer Parameters`: Python script which aggregates all results from multiple albacore runs
+
 
 ### configs/slurm.yaml ###
 
