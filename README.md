@@ -8,7 +8,7 @@ Snakemake application for parallelization of Oxford Nanopore basecalling using a
 
 ```
 
-git https://github.com/phac-nml/miniontoolkit.git
+git clone https://github.com/phac-nml/miniontoolkit.git
 cd miniontoolkit
 
 #soft link your results
